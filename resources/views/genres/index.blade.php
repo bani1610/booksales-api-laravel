@@ -10,6 +10,7 @@
 
     <h1>Daftar Genre Buku</h1>
 
+    <a href="/books">Lihat Data Buku</a>
     <a href="/authors">Lihat Data Author</a>
 
     <br><br>
