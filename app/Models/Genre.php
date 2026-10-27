@@ -6,34 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Genre extends Model
 {
-    public static function getData()
+   public $timestamps = false;
+
+    protected $fillable = [
+        'name',
+        'description',
+    ];
+
+    public function books()
     {
-        return [
-            [
-                'id' => 1,
-                'name' => 'Fiksi',
-                'description' => 'Buku cerita berdasarkan imajinasi.'
-            ],
-            [
-                'id' => 2,
-                'name' => 'Non-Fiksi',
-                'description' => 'Buku berdasarkan fakta dan kejadian nyata.'
-            ],
-            [
-                'id' => 3,
-                'name' => 'Teknologi',
-                'description' => 'Buku tentang komputer dan teknologi.'
-            ],
-            [
-                'id' => 4,
-                'name' => 'Sejarah',
-                'description' => 'Buku tentang peristiwa masa lalu.'
-            ],
-            [
-                'id' => 5,
-                'name' => 'Pendidikan',
-                'description' => 'Buku untuk pembelajaran dan pendidikan.'
-            ]
-        ];
+        return $this->hasMany(Book::class);
     }
 }
