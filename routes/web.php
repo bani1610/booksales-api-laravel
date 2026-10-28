@@ -1,16 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\BookController;
-use App\Http\Controllers\AuthorController;
-use App\Http\Controllers\GenreController;
 
 Route::get('/', function () {
-    return redirect('/books');
+    return response()->json([
+        'message' => 'Book Sales API is running'
+    ]);
 });
-
-Route::get('/books', [BookController::class, 'index']);
-
-Route::get('/authors', [AuthorController::class, 'index']);
-
-Route::get('/genres', [GenreController::class, 'index']);
