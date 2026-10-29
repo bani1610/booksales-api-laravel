@@ -1,0 +1,118 @@
+{
+	"info": {
+		"_postman_id": "booksales-api-collection",
+		"name": "Booksales API - Genre & Author",
+		"description": "Collection untuk testing fitur Read All dan Create pada tabel Genre dan Author",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000/api"
+		}
+	],
+	"item": [
+		{
+			"name": "Genre",
+			"item": [
+				{
+					"name": "Read All Genres",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/genres",
+							"host": ["{{base_url}}"],
+							"path": ["genres"]
+						},
+						"description": "Mengambil semua data genre beserta relasi books"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Genre",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Fiction\",\n    \"description\": \"Fictional stories and novels\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/genres",
+							"host": ["{{base_url}}"],
+							"path": ["genres"]
+						},
+						"description": "Membuat data genre baru"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Author",
+			"item": [
+				{
+					"name": "Read All Authors",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/authors",
+							"host": ["{{base_url}}"],
+							"path": ["authors"]
+						},
+						"description": "Mengambil semua data author beserta relasi books"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Author",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"J.K. Rowling\",\n    \"photo\": \"https://example.com/jkrowling.jpg\",\n    \"bio\": \"British author best known for the Harry Potter series\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/authors",
+							"host": ["{{base_url}}"],
+							"path": ["authors"]
+						},
+						"description": "Membuat data author baru"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
