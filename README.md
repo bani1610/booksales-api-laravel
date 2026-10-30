@@ -21,6 +21,17 @@ Laravel is a web application framework with expressive, elegant syntax. We belie
 
 Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
+## Author Search API
+
+Filter authors by name or bio with the optional `search` query parameter:
+
+```text
+GET /api/authors?search=tere
+```
+
+The search performs a partial match against the author name and bio, and returns the
+same response structure as `GET /api/authors`.
+
 ## Learning Laravel
 
 Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.

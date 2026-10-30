@@ -10,9 +10,20 @@ class AuthorController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $authors = Author::with('books')->get();
+        $validated = $request->validate([
+            'search' => 'nullable|string|max:255',
+        ]);
+
+        $authors = Author::with('books')
+            ->when($validated['search'] ?? null, function ($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('bio', 'like', "%{$search}%");
+                });
+            })
+            ->get();
 
         return response()->json([
             'success' => true,
