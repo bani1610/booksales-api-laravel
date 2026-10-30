@@ -5,6 +5,20 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\GenreController;
 
-Route::apiResource('books', BookController::class);
-Route::apiResource('authors', AuthorController::class);
-Route::apiResource('genres', GenreController::class);
+Route::apiResources([
+	'books' => BookController::class,
+	'authors' => AuthorController::class,
+	'genres' => GenreController::class,
+], [
+	'only' => ['index', 'show'],
+]);
+
+Route::middleware(['auth', 'admin'])->group(function () {
+	Route::apiResources([
+		'books' => BookController::class,
+		'authors' => AuthorController::class,
+		'genres' => GenreController::class,
+	], [
+		'except' => ['index', 'show'],
+	]);
+});

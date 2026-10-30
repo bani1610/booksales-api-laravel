@@ -1,118 +1,630 @@
 {
-	"info": {
-		"_postman_id": "booksales-api-collection",
-		"name": "Booksales API - Genre & Author",
-		"description": "Collection untuk testing fitur Read All dan Create pada tabel Genre dan Author",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"variable": [
-		{
-			"key": "base_url",
-			"value": "http://127.0.0.1:8000/api"
-		}
-	],
-	"item": [
-		{
-			"name": "Genre",
-			"item": [
-				{
-					"name": "Read All Genres",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/genres",
-							"host": ["{{base_url}}"],
-							"path": ["genres"]
-						},
-						"description": "Mengambil semua data genre beserta relasi books"
-					},
-					"response": []
-				},
-				{
-					"name": "Create Genre",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"Fiction\",\n    \"description\": \"Fictional stories and novels\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/genres",
-							"host": ["{{base_url}}"],
-							"path": ["genres"]
-						},
-						"description": "Membuat data genre baru"
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Author",
-			"item": [
-				{
-					"name": "Read All Authors",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/authors",
-							"host": ["{{base_url}}"],
-							"path": ["authors"]
-						},
-						"description": "Mengambil semua data author beserta relasi books"
-					},
-					"response": []
-				},
-				{
-					"name": "Create Author",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"J.K. Rowling\",\n    \"photo\": \"https://example.com/jkrowling.jpg\",\n    \"bio\": \"British author best known for the Harry Potter series\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/authors",
-							"host": ["{{base_url}}"],
-							"path": ["authors"]
-						},
-						"description": "Membuat data author baru"
-					},
-					"response": []
-				}
-			]
-		}
-	]
+  "info": {
+    "_postman_id": "booksales-api-complete",
+    "name": "Booksales API - Complete Test Suite",
+    "description": "Collection untuk menguji endpoint read publik dan memastikan endpoint mutasi Books, Authors, dan Genres menolak request tanpa autentikasi admin.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000/api"
+    },
+    {
+      "key": "author_id",
+      "value": "1"
+    },
+    {
+      "key": "genre_id",
+      "value": "1"
+    },
+    {
+      "key": "book_id",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authors",
+      "item": [
+        {
+          "name": "01 - List Authors",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/authors",
+            "description": "Mengambil semua author beserta relasi books."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response memiliki data author', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "    pm.expect(json.data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 - Search Authors",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/authors?search=Tere",
+            "description": "Mencari author berdasarkan nama atau bio."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Hasil pencarian mengandung Tere Liye', function () {",
+                  "    const data = pm.response.json().data;",
+                  "    pm.expect(data.some(function (author) { return author.name === 'Tere Liye'; })).to.eql(true);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "03 - Get Author Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/authors/{{author_id}}",
+            "description": "Mengambil detail author berdasarkan ID."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Data author memiliki field utama', function () {",
+                  "    pm.expect(pm.response.json().data).to.have.property('name');",
+                  "    pm.expect(pm.response.json().data).to.have.property('books');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "04 - Create Author",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Test Author\",\n  \"photo\": \"postman-test-author.jpg\",\n  \"bio\": \"Author yang dibuat untuk pengujian API.\"\n}"
+            },
+            "url": "{{base_url}}/authors",
+            "description": "Membuat author baru dan menyimpan ID-nya."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Mutasi tanpa autentikasi ditolak', function () { pm.response.to.have.status(401); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "05 - Update Author",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Updated Author\",\n  \"bio\": \"Bio author yang telah diperbarui.\"\n}"
+            },
+            "url": "{{base_url}}/authors/{{created_author_id}}",
+            "description": "Memperbarui author yang dibuat oleh request sebelumnya."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Mutasi tanpa autentikasi ditolak', function () { pm.response.to.have.status(401); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "06 - Delete Author",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/authors/{{created_author_id}}",
+            "description": "Menghapus author hasil pengujian."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Mutasi tanpa autentikasi ditolak', function () { pm.response.to.have.status(401); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "07 - Validation Error",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\"\n}"
+            },
+            "url": "{{base_url}}/authors",
+            "description": "Memastikan field name wajib divalidasi."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Validasi tidak dilewati tanpa autentikasi', function () { pm.response.to.have.status(401); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Genres",
+      "item": [
+        {
+          "name": "01 - List Genres",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/genres",
+            "description": "Mengambil semua genre beserta relasi books."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Data genre berupa array', function () { pm.expect(pm.response.json().data).to.be.an('array'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 - Get Genre Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/genres/{{genre_id}}",
+            "description": "Mengambil detail genre berdasarkan ID."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Genre memiliki relasi books', function () { pm.expect(pm.response.json().data).to.have.property('books'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "03 - Create Genre",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Test Genre\",\n  \"description\": \"Genre yang dibuat untuk pengujian API.\"\n}"
+            },
+            "url": "{{base_url}}/genres",
+            "description": "Membuat genre baru dan menyimpan ID-nya."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Mutasi tanpa autentikasi ditolak', function () { pm.response.to.have.status(401); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "04 - Update Genre",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Updated Genre\",\n  \"description\": \"Deskripsi genre yang telah diperbarui.\"\n}"
+            },
+            "url": "{{base_url}}/genres/{{created_genre_id}}",
+            "description": "Memperbarui genre yang dibuat oleh request sebelumnya."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Mutasi tanpa autentikasi ditolak', function () { pm.response.to.have.status(401); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "05 - Delete Genre",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/genres/{{created_genre_id}}",
+            "description": "Menghapus genre hasil pengujian."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Mutasi tanpa autentikasi ditolak', function () { pm.response.to.have.status(401); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "06 - Not Found Error",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/genres/999999",
+            "description": "Memastikan ID genre yang tidak ada menghasilkan 404."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test('Pesan error tersedia', function () { pm.expect(pm.response.json().success).to.eql(false); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Books",
+      "item": [
+        {
+          "name": "01 - List Books",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/books",
+            "description": "Mengambil semua buku beserta genre dan author."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Data book berupa array', function () { pm.expect(pm.response.json().data).to.be.an('array'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 - Get Book Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/books/{{book_id}}",
+            "description": "Mengambil detail buku berdasarkan ID."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Book memiliki genre dan author', function () {",
+                  "    const data = pm.response.json().data;",
+                  "    pm.expect(data).to.have.property('genre');",
+                  "    pm.expect(data).to.have.property('author');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "03 - Create Book",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Postman Test Book\",\n  \"description\": \"Buku yang dibuat untuk pengujian API.\",\n  \"price\": 75000,\n  \"stock\": 10,\n  \"cover_photo\": \"postman-test-book.jpg\",\n  \"genre_id\": {{genre_id}},\n  \"author_id\": {{author_id}}\n}"
+            },
+            "url": "{{base_url}}/books",
+            "description": "Membuat buku baru dengan genre dan author yang valid."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Mutasi tanpa autentikasi ditolak', function () { pm.response.to.have.status(401); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "04 - Update Book",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Postman Updated Book\",\n  \"price\": 80000,\n  \"stock\": 15\n}"
+            },
+            "url": "{{base_url}}/books/{{created_book_id}}",
+            "description": "Memperbarui buku yang dibuat oleh request sebelumnya."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Mutasi tanpa autentikasi ditolak', function () { pm.response.to.have.status(401); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "05 - Delete Book",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/books/{{created_book_id}}",
+            "description": "Menghapus buku hasil pengujian."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Mutasi tanpa autentikasi ditolak', function () { pm.response.to.have.status(401); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "06 - Validation Error",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Invalid Book\",\n  \"price\": -100,\n  \"stock\": -1,\n  \"genre_id\": 999999,\n  \"author_id\": 999999\n}"
+            },
+            "url": "{{base_url}}/books",
+            "description": "Memastikan validasi harga, stock, genre_id, dan author_id berjalan."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Validasi tidak dilewati tanpa autentikasi', function () { pm.response.to.have.status(401); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "07 - Not Found Error",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/books/999999",
+            "description": "Memastikan ID buku yang tidak ada menghasilkan 404."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test('Response menyatakan book tidak ditemukan', function () { pm.expect(pm.response.json().success).to.eql(false); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }
